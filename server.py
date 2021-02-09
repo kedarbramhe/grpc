@@ -10,9 +10,17 @@ import utils
 class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
 
     def __init__(self):
-        self.db = utils.read_keyval_database()
+        self.db = utils.read_keyval_database() 
 
     def Read(self,request,context):
+        if request.key not in self.db.keys():
+            return keyval_pb2.ReadResponse(status=keyval_pb2.Status(server_id=1,
+                                            ok=False,
+                                            error='Read aborted. Key not present {}'.format(request.key)),
+                                        key=None,
+                                        value= None,
+                                        current_version= None)
+                                        
         statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
         item  = self.db[request.key]
         return keyval_pb2.ReadResponse(status=statusObject,
