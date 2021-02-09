@@ -20,8 +20,8 @@ def get_value(stub,key):
     # if response:
     #     print("value is"+response.value+" and version stored is"+response.current_version)
 
-def read_value(stub,key):
-    response = get_value(stub,key)
+def read_value(stub,entry):
+    response = get_value(stub,entry['key'])
     if response.status.ok!=True:
         # non existence key read 
         return (response)
@@ -31,74 +31,74 @@ def read_value(stub,key):
 
 def write_value(stub,entry):
     # check if the key already exists 
-    if(entry.current_version<0):
+    if(entry['current_version']<0):
         #blind write
-        response_  = Stub.Write(keyval_pb2.WriteRequest(key=entry.key,value=entry.value,current_version=1))
+        response_  = stub.Write(keyval_pb2.WriteRequest(key=entry['key'],value=entry['value'],current_version=1))
         return (response_)
         # return
     
     # check if value already exist
-    response = get_value(stub,entry.key)
+    response = get_value(stub,entry['key'])
     
     if response.status.ok!=True:
         # the values does not exist
         # we can write the new pair with current_version =1
-        if(entry.current_version==1):
-            response_  = Stub.Write(keyval_pb2.WriteRequest(key=entry.key,value=entry.value,current_version=1))
+        if(entry['current_version']==1):
+            response_  = Stub.Write(keyval_pb2.WriteRequest(key=entry['key'],value=entry['value'],current_version=1))
             if response_.status.ok!=True:
                 return (response_.status.error)
             else:
                 return (response_)
         else:
             # new value but version mismatch
-            errorMessage = 'Write aborted. Record missing but Write expected value to exist at version 1'+str(entry.current_version)
+            errorMessage = 'Write aborted. Record missing but Write expected value to exist at version 1'+str(entry['current_version'])
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry.key,value=entry.value,new_version=entry.current_version)
+            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
             return (response___)
     else :
         # the values exists
         #  now we have check if the version number matches
-        if response.current_version == entry.current_version:
+        if response.current_version == entry['current_version']:
             # we can change the value
-            new_version = entry.current_version+1
-            response_  = Stub.Write(keyval_pb2.WriteRequest(key=entry.key,value=entry.value,current_version=new_version))
+            new_version = entry['current_version']+1
+            response_  = stub.Write(keyval_pb2.WriteRequest(key=entry['key'],value=entry['value'],current_version=new_version))
         else:
             # show error that the current version does not match
-            errorMessage = 'Write aborted. Record version mismatch. Expected = '+str(response.current_version)+', Actual = '+str(entry.current_version)
+            errorMessage = 'Write aborted. Record version mismatch. Expected = '+str(response.current_version)+', Actual = '+str(entry['current_version'])
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry.key,value=entry.value,new_version=entry.current_version)
+            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
             return (response___)
 
 def get_list(stub):
-    response = stub.List()
+    response = stub.List(keyval_pb2.ListRequest())
     return (response)
 
 def delete_value(stub,entry): #only key and current_version is passed for the delete operation
     # check for the value
-    if entry.current_version == 0:
+    if entry['current_version'] == 0:
         # throw error
         errorMessage = 'Delete aborted . current_version cannot be 0'
         statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
         return (statusObject)
         
-    response = get_value(stub,entry.key)
+    response = get_value(stub,entry['key'])
     if response.status.ok!=True:
         # values does not exist
-        errorMessage = 'Key not present'+key
+        errorMessage = 'Key not present'+entry['key']
         statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
         return (statusObject)
     else:
         # value present 
         # check for the version mismatch
-        if response.current_version == entry.current_version:
+        if response.current_version == entry['current_version']:
             # perform delete operation
-            response_ = stub.Delete(keyval_pb2.Delete(key=entry.key,current_version=entry.current_version))  
+            response_ = stub.Delete(keyval_pb2.DeleteRequest(key=entry['key'],current_version=entry['current_version']))  
             return (response_)
         else:
             # show the error message of version mismatch
-            errorMessage = 'Delete aborted. Record version mismatch: Expected = '+str(response.current_version)+', Actual = '+str(entry.current_version)
+            errorMessage = 'Delete aborted. Record version mismatch: Expected = '+str(response.current_version)+', Actual = '+str(entry['current_version'])
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry.key,value=entry.value,new_version=entry.current_version)
+            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
             return (response___)  
 
 
