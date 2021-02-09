@@ -25,7 +25,7 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = keyval_pb2_grpc.KeyValueStub(channel)
         print("-------------- GetValue --------------")
-        get_value(stub,'1')
+        get_value(stub,keyval_pb2.ReadRequest(key='1'))
         # print("-------------- ListFeatures --------------")
         # guide_list_features(stub)
         # print("-------------- RecordRoute --------------")
