@@ -10,7 +10,7 @@ def read_keyval_database():
     try:
         with open(FILENAME) as handle:
             for item in json.load(handle):
-                feature = keyval_pb2.Entry(key= item['key'],value= item['value'],current_version=item['version'])
+                feature = keyval_pb2.Entry(key= item['key'],value= item['value'],current_version=item['current_version'])
                 feature_list[item['key']] = feature
     except:
         with open(FILENAME, 'wb') as handle:
