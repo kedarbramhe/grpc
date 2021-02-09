@@ -5,8 +5,16 @@ import time
 import math
 import logging
 import grpc
+import utils
 
 class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
+
+    def __init__(self):
+        self.db = utils.read_route_guide_database()
+
+
+
+
     def Read(self,request,context):
         #request in the key value
         for entry in self.db:
