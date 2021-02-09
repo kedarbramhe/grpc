@@ -1,7 +1,1 @@
-[
-	{
-		"key":"1",
-		"value":"asd",
-		"current_version":1
-	}
-]
+[{"key": "a2", "value": "1", "current_version": 1}, {"key": "a12", "value": "1", "current_version": 1}]

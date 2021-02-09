@@ -12,30 +12,22 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
     def __init__(self):
         self.db = utils.read_keyval_database()
 
-
-
-
-
     def Read(self,request,context):
-        #request in the key value
-        #message Status {
-        #          int32 server_id = 1; // Id of the server that is responding
-        #            bool ok = 2; // If the request executed successfully at the server
-        #              string error = 3; // if ok == False, a human-readable eror string
-        #              }
         statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
         item  = self.db[request.key]
-        print(item)
-        return keyval_pb2.ReadResponse(status=statusObject,key='0',value='0',current_version=0)
-        #return keyval_pb2.Entry(key=item['key'],value=item['value'],current_version=item['current_version'])
-        #print(self.db[request.key])
-        # for entry in self.db:
-        #     print(entry)
-        #     print(request)
-        #     if entry == request:
-        #         return entry
-        #     else :
-        #         return keyval_pb2.Entry(key='0',value='0',current_version=0)
+        return keyval_pb2.ReadResponse(status=statusObject,
+                                        key=item.key,
+                                        value= item.value,
+                                        current_version= item.current_version)
+
+    def Write(self, request, context):
+        statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
+        self.db[request.key] = keyval_pb2.Entry(key= request.key,
+                                                value= request.value,
+                                                current_version=request.current_version)
+        utils.save_keyval_database(self.db)
+        return keyval_pb2.WriteResponse(status=statusObject,
+                                        key=request.key)
     
 def serve():
             server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
