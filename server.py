@@ -21,7 +21,7 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
                                         value= None,
                                         current_version= None)
                                         
-        statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
+        statusObject = keyval_pb2.Status(server_id=1,ok=True) #,error='none'
         item  = self.db[request.key]
         return keyval_pb2.ReadResponse(status=statusObject,
                                         key=item.key,
@@ -29,16 +29,16 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
                                         current_version= item.current_version)
 
     def Write(self, request, context):
-        statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
+        statusObject = keyval_pb2.Status(server_id=1,ok=True) #,error='none'
         self.db[request.key] = keyval_pb2.Entry(key= request.key,
                                                 value= request.value,
                                                 current_version=request.current_version)
         utils.save_keyval_database(self.db)
         return keyval_pb2.WriteResponse(status=statusObject,
-                                        key=request.key)
+                                        key=request.key,new_version=request.current_version)
 
     def Delete(self, request, context):
-        statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
+        statusObject = keyval_pb2.Status(server_id=1,ok=True) #,error='none'
         item  = self.db[request.key]
         del self.db[request.key]
         utils.save_keyval_database(self.db)
@@ -48,7 +48,7 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
                                         deleted_version = item.current_version)
 
     def List(self, request, context):
-        statusObject = keyval_pb2.Status(server_id=1,ok=True,error='none')
+        statusObject = keyval_pb2.Status(server_id=1,ok=True)  #,error='none'
         entries = []
         for key,val in self.db.items():
             entries.append({"key": key, 

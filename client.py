@@ -51,7 +51,7 @@ def write_value(stub,entry):
                 return (response_)
         else:
             # new value but version mismatch
-            errorMessage = 'Write aborted. Record missing but Write expected value to exist at version 1'+str(entry['current_version'])
+            errorMessage = 'Write aborted. Record missing but Write expected value to exist at version 1'
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
             response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
             return (response___)
@@ -62,6 +62,7 @@ def write_value(stub,entry):
             # we can change the value
             new_version = entry['current_version']+1
             response_  = stub.Write(keyval_pb2.WriteRequest(key=entry['key'],value=entry['value'],current_version=new_version))
+            return response_
         else:
             # show error that the current version does not match
             errorMessage = 'Write aborted. Record version mismatch. Expected = '+str(response.current_version)+', Actual = '+str(entry['current_version'])
@@ -79,14 +80,14 @@ def delete_value(stub,entry): #only key and current_version is passed for the de
         # throw error
         errorMessage = 'Delete aborted . current_version cannot be 0'
         statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-        return (statusObject)
+        return keyval_pb2.WriteResponse(status=statusObject)
         
     response = get_value(stub,entry['key'])
     if response.status.ok!=True:
         # values does not exist
-        errorMessage = 'Key not present'+entry['key']
+        errorMessage = 'Key not present '+entry['key']
         statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-        return (statusObject)
+        return keyval_pb2.WriteResponse(status=statusObject)
     else:
         # value present 
         # check for the version mismatch
@@ -109,9 +110,9 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = keyval_pb2_grpc.KeyValueStub(channel)
 
+        
         # operations to be performed
         # Blind write: Write Key1, Value1 with no version check
-        print("-------------------------------------------------------------------")
         print("Write result:")
         print(write_value(stub,{'key':'Key1','value':'Value1','current_version':-1}))
         
