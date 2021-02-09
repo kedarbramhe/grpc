@@ -24,6 +24,23 @@ def write_value(stub, key, value):
     else:
         print('Error')
 
+def delete_key(stub, key):
+    request = keyval_pb2.DeleteRequest(key= key, current_version = 1)
+    response = stub.Delete(request)
+    if response:
+        print('Sucessfully deleted key {}'.format(response.key))
+    else:
+        print('Error')
+
+def list_entries(stub):
+    request = keyval_pb2.ListRequest()
+    response = stub.List(request)
+    if response:
+        print("Entries: {}".format(response.entries))
+
+
+
+
 def run():
     # NOTE(gRPC Python Team): .close() is possible on a channel and should be
     # used in circumstances in which the with statement does not fit the needs
@@ -31,14 +48,13 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = keyval_pb2_grpc.KeyValueStub(channel)
         print("-------------- GetValue --------------")
-        get_value(stub,'1')
-        write_value(stub, 'a12', '1')
-        # print("-------------- ListFeatures --------------")
-        # guide_list_features(stub)
-        # print("-------------- RecordRoute --------------")
-        # guide_record_route(stub)
-        # print("-------------- RouteChat --------------")
-        # guide_route_chat(stub)
+        write_value(stub, 'a1', '1')
+        write_value(stub, 'a2', '11')
+        write_value(stub, 'a3', '111')
+        list_entries(stub)
+        delete_key(stub, 'a3')
+        delete_key(stub, 'a2')
+        list_entries(stub)
 
 
 if __name__ == '__main__':

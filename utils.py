@@ -27,5 +27,3 @@ def save_keyval_database(db):
     print('writing to json file: {}'.format(final))
     with open(FILENAME, 'w') as handle:
             json.dump(final, handle)
-
-}
