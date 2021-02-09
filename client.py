@@ -108,6 +108,7 @@ def run():
 
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = keyval_pb2_grpc.KeyValueStub(channel)
+
         # operations to be performed
         # Blind write: Write Key1, Value1 with no version check
         print("-------------------------------------------------------------------")
@@ -179,7 +180,6 @@ def run():
         print("List result:")
         print(get_list(stub))
             
-
 
 if __name__ == '__main__':
     logging.basicConfig()

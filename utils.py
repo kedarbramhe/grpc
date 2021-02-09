@@ -13,10 +13,17 @@ def read_keyval_database():
                 feature = keyval_pb2.Entry(key= item['key'],value= item['value'],current_version=item['current_version'])
                 feature_list[item['key']] = feature
     except:
-        with open(FILENAME, 'wb') as handle:
-            json.dump(feature_list, handle)
+        with open(FILENAME, 'w') as handle:
+            json.dump([], handle)
 
     return feature_list
 
 
-
+def save_keyval_database(db):
+    final = []
+    for key, val_obj in db.items():
+        item = {"key": key, "value":val_obj.value, "current_version":val_obj.current_version}
+        final.append(item)
+    print('writing to json file: {}'.format(final))
+    with open(FILENAME, 'w') as handle:
+            json.dump(final, handle)
