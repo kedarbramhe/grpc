@@ -1,4 +1,4 @@
-from client import get_list, get_value, write_value
+from keyval_client_group01 import get_list, get_value, write_value
 import random
 import logging
 
@@ -8,8 +8,8 @@ import keyval_pb2
 import keyval_pb2_grpc
 
 def run_sharder():
-    channel1 = grpc.insecure_channel('localhost:500050')
-    channel2 = grpc.insecure_channel('localhost:500051')
+    channel1 = grpc.insecure_channel('localhost:50050')
+    channel2 = grpc.insecure_channel('localhost:50051')
 
     stub1 = keyval_pb2_grpc.KeyValueStub(channel1)
     stub2 = keyval_pb2_grpc.KeyValueStub(channel2)
