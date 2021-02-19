@@ -3,7 +3,7 @@ import keyval_pb2
 
 FILENAME = "keyval.json"
 
-def read_keyval_database():
+def read_keyval_database(filename = FILENAME):
     """Reads the key val database.
   """
     feature_list = {}
@@ -19,7 +19,7 @@ def read_keyval_database():
     return feature_list
 
 
-def save_keyval_database(db):
+def save_keyval_database(db, filename = FILENAME):
     final = []
     for key, val_obj in db.items():
         item = {"key": key, "value":val_obj.value, "current_version":val_obj.current_version}
