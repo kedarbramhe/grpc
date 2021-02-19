@@ -41,7 +41,7 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
         self.db[request.key] = keyval_pb2.Entry(key= request.key,
                                                 value= request.value,
                                                 current_version=request.current_version)
-        utils.save_keyval_database(self.db, self.filename)
+        # utils.save_keyval_database(self.db, self.filename)
         print('write_done')
         return keyval_pb2.WriteResponse(status=statusObject,
                                         key=request.key,new_version=request.current_version)
@@ -50,7 +50,7 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
         statusObject = keyval_pb2.Status(server_id=self.server_id,ok=True) #,error='none'
         item  = self.db[request.key]
         del self.db[request.key]
-        utils.save_keyval_database(self.db, self.filename)
+        # utils.save_keyval_database(self.db, self.filename)
         return keyval_pb2.DeleteResponse(status=statusObject,
                                         key=request.key, 
                                         deleted_value = item.value,

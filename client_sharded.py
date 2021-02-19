@@ -8,22 +8,29 @@ import keyval_pb2
 import keyval_pb2_grpc
 
 def run_sharder():
-    channel1 = grpc.insecure_channel('localhost:50051')
-    channel2 = grpc.insecure_channel('localhost:50050')
+    channel1 = grpc.insecure_channel('localhost:50050')
+    channel2 = grpc.insecure_channel('localhost:50051')
 
     stub1 = keyval_pb2_grpc.KeyValueStub(channel1)
     stub2 = keyval_pb2_grpc.KeyValueStub(channel2)
-    print('stubs created')
     for i in range(0,10):
         key = 'ShardKey{}'.format(i)
         value = 'Value{}'.format(i)
         if i % 2 == 0:
-            write_value(stub2,{'key':key,'value': value,'current_version': -1})
+            response = write_value(stub2,{'key':key,'value': value,'current_version': -1})
+            print('Write result:')
+            print(response)
+            print('-------------------------------------------------------------------')
         else:
-            write_value(stub1,{'key':key,'value':value,'current_version': -1})
+            response  = write_value(stub1,{'key':key,'value':value,'current_version': -1})
+            print('Write result:')
+            print(response)
+            print('-------------------------------------------------------------------')
 
-        print(get_list(stub1))
-        print(get_list(stub2))
+    print(get_list(stub1))
+    print('-------------------------------------------------------------------')
+    print(get_list(stub2))
+    print('-------------------------------------------------------------------')
 
 
 if __name__ == '__main__':
