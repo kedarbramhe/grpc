@@ -65,9 +65,9 @@ def write_value(stub,entry):
             return response_
         else:
             # show error that the current version does not match
-            errorMessage = 'Write aborted. Record version mismatch. Expected = '+str(response.current_version)+', Actual = '+str(entry['current_version'])
+            errorMessage = 'Write aborted. Record version mismatch. Expected = '+str(entry['current_version'])+', Actual = '+str(response.current_version)
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
+            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=response.current_version)
             return (response___)
 
 def get_list(stub):
@@ -97,9 +97,9 @@ def delete_value(stub,entry): #only key and current_version is passed for the de
             return (response_)
         else:
             # show the error message of version mismatch
-            errorMessage = 'Delete aborted. Record version mismatch: Expected = '+str(response.current_version)+', Actual = '+str(entry['current_version'])
+            errorMessage = 'Delete aborted. Record version mismatch: Expected = '+str(entry['current_version'])+', Actual = '+str(response.current_version)
             statusObject = keyval_pb2.Status(server_id=1,ok=False,error=errorMessage)
-            response___ = keyval_pb2.WriteResponse(status=statusObject,key=entry['key'],new_version=entry['current_version'])
+            response___ = keyval_pb2.WriteResponse(status=statusObject)
             return (response___)  
 
 
@@ -107,7 +107,7 @@ def delete_value(stub,entry): #only key and current_version is passed for the de
 def run():
 
 
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel('localhost:50050') as channel:
         stub = keyval_pb2_grpc.KeyValueStub(channel)
 
         
@@ -119,7 +119,7 @@ def run():
         # Normal write: Write Key1, Value1 expecting the current version to be 1                                                                                                                
         print("-------------------------------------------------------------------")
         print("Write result:")
-        print(write_value(stub,{'key':'Key1','value':'Value1','current_version':1}))
+        print(write_value(stub,{'key':'Key1','value':'Value2','current_version':1}))
         
         # Version check failure: Write Key1, Value3 expecting the current version to be 1                                                                                                                                                                                          
         print("-------------------------------------------------------------------")
@@ -180,7 +180,7 @@ def run():
         print("-------------------------------------------------------------------")
         print("List result:")
         print(get_list(stub))
-            
+        print("-------------------------------------------------------------------")
 
 if __name__ == '__main__':
     logging.basicConfig()
