@@ -1,4 +1,4 @@
-from client import write_value,get_list
+from client import get_list, get_value, write_value
 import random
 import logging
 
@@ -13,7 +13,7 @@ def run_sharder():
 
     stub1 = keyval_pb2_grpc.KeyValueStub(channel1)
     stub2 = keyval_pb2_grpc.KeyValueStub(channel2)
-
+    print('stubs created')
     for i in range(0,10):
         key = 'ShardKey{}'.format(i)
         value = 'Value{}'.format(i)
@@ -22,6 +22,10 @@ def run_sharder():
         else:
             write_value(stub1,{'key':key,'value':value,'current_version': -1})
 
-        get_list(stub1)
-        get_list(stub2)
+        print(get_list(stub1))
+        print(get_list(stub2))
 
+
+if __name__ == '__main__':
+    logging.basicConfig()
+    run_sharder()
