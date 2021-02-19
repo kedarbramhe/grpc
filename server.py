@@ -7,6 +7,7 @@ import logging
 import grpc
 import utils
 import argparse
+import time
 
 class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
 
@@ -34,6 +35,8 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
 
     def Write(self, request, context):
         print('write_started')
+        # adding the write-delay passed as an argument
+        time.sleep(self.delay)
         statusObject = keyval_pb2.Status(server_id=self.server_id,ok=True) #,error='none'
         self.db[request.key] = keyval_pb2.Entry(key= request.key,
                                                 value= request.value,
