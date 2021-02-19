@@ -8,8 +8,8 @@ import keyval_pb2
 import keyval_pb2_grpc
 
 def run_sharder():
-    channel1 = grpc.insecure_channel('localhost:50050')
-    channel2 = grpc.insecure_channel('localhost:50051')
+    channel1 = grpc.insecure_channel('localhost:500050')
+    channel2 = grpc.insecure_channel('localhost:500051')
 
     stub1 = keyval_pb2_grpc.KeyValueStub(channel1)
     stub2 = keyval_pb2_grpc.KeyValueStub(channel2)
@@ -26,9 +26,10 @@ def run_sharder():
             print('Write result:')
             print(response)
             print('-------------------------------------------------------------------')
-
+    print('List result:')
     print(get_list(stub1))
     print('-------------------------------------------------------------------')
+    print('List result:')
     print(get_list(stub2))
     print('-------------------------------------------------------------------')
 

@@ -30,13 +30,13 @@ def read_value(stub,entry):
         return (response)
 
 def write_value(stub,entry):
-    print('write_value')
+    
     # check if the key already exists 
     if(entry['current_version']<0):
         #blind write
         response_  = stub.Write(keyval_pb2.WriteRequest(key=entry['key'],value=entry['value'],current_version=1))
-        print(response_)
-        print('blind_write', entry['key'], response_.status.server_id)
+        # print(response_)
+        # print('blind_write', entry['key'], response_.status.server_id)
         return (response_)
         # return
     
