@@ -10,8 +10,9 @@ import argparse
 
 class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
 
-    def __init__(self, server_id) :
-        self.server_id = server_id
+    def __init__(self, server_id, delay) :
+        self.server_id = int(server_id)
+        self.delay = int(delay)
         self.filename = 'keyval-{}.json'.format(server_id)
         self.db = utils.read_keyval_database(filename= self.filename) 
 
@@ -62,10 +63,12 @@ class KeyValueServicer(keyval_pb2_grpc.KeyValueServicer):
         
         return keyval_pb2.ListResponse(status = statusObject, entries = entries)
 
-def serve(port, server_id):
+def serve(port, server_id, delay):
     print('server port:{} server_id : {}'.format(port, server_id))
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    keyval_pb2_grpc.add_KeyValueServicer_to_server(KeyValueServicer(server_id=server_id), server)
+    keyval_pb2_grpc.add_KeyValueServicer_to_server(KeyValueServicer(server_id=server_id,
+                                                                    delay = delay),
+                                                         server)
     server.add_insecure_port('[::]:{}'.format(port))
     server.start()
     server.wait_for_termination()
@@ -77,5 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('--port ', action="store", dest='port', default='50050')
     args = parser.parse_args()
     logging.basicConfig()
-    serve(port = args.port, server_id = args.server_id)
+    serve(port = args.port, 
+        server_id = args.server_id,
+        delay = args.delay)
           
